@@ -8,5 +8,6 @@ add_compile_options(-Wall -Wextra -Wpedantic)
 
 add_executable(code
                inst.hpp
+               util.hpp
                main.cpp
               )
