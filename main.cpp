@@ -7,7 +7,7 @@
 int main() {
   input();
   unsigned clock = 0u;
-  while(!global_halt) {
+  while(!global_halt && clock <= 400000) {
     /* updates */
     pc_in = pc_nx;
     reg.upd();

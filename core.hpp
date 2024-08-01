@@ -250,16 +250,19 @@ struct SLB {
           // write(node.Vk, pos, 1);
           stuck = true;
           set_rob(node.Qdest, 2, 2, pos);
+          set_rob(node.Qdest, 2, 1, node.Vk);
         break;
         case SH:
           // write(node.Vk, pos, 2);
           stuck = true;
           set_rob(node.Qdest, 2, 2, pos);
+          set_rob(node.Qdest, 2, 1, node.Vk);
         break;
         case SW:
           // write(node.Vk, pos, 4);
           stuck = true;
           set_rob(node.Qdest, 2, 2, pos);
+          set_rob(node.Qdest, 2, 1, node.Vk);
         break;
         default:
           assert(false);
