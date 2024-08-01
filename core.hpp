@@ -200,7 +200,7 @@ void exe() {
       //else if((SB <= node.op && node.op <= SW) || (node.op == JALR)) {}
       if(node.op == JALR) {
         set_rob(node.Qdest, 2, 2, res);
-        std::cout<<"RES="<<res<<std::endl;
+        // std::cout<<"RES="<<res<<std::endl;
       }
       else if(!(LB <= node.op && node.op <= SW)) {
         set_rob(node.Qdest, 2, 1, res);
@@ -225,7 +225,7 @@ struct SLB {
   void exe() {
     if(!slb_in.empty()) {
       RSNode node = slb_in.top();
-      std::cout <<"SLQJQK" << std::hex << node.Qj << " " << node.Qk << std::endl;
+      // std::cout <<"SLQJQK" << std::hex << node.Qj << " " << node.Qk << std::endl;
       if(node.Qj == -1 && node.Qk == -1) {
         int pos = node.Vj + node.A;
         switch(node.op) {
@@ -300,7 +300,7 @@ void exe() {
     if(st == None) issue(i);
     else if(st == Issu) execute(i);
     else if(st == Exec) write_result(i);
-    std::cout<<std::hex<<"IN ROB "<<RoB_in[i].in.pc<<" "<<st<<std::endl;
+    // std::cout<<std::hex<<"IN ROB "<<RoB_in[i].in.pc<<" "<<st<<std::endl;
   }
 }
 void commit(int i) {
@@ -432,9 +432,10 @@ void issue(int i) {
     if(op == JAL || op == JALR) {
       RoB_nx[i].val = node.in.pc + 4;
     }
-    if(op == JALR)
-    std::cout<<std::hex<<out.Vj<<" "<<out.Vk<<" "<<out.Qj<<" "<<out.Qk <<" "<<out.A<<std::endl;
-    /* */
+    // if(op == JALR) {
+    // std::cout<<std::hex<<out.Vj<<" "<<out.Vk<<" "<<out.Qj<<" "<<out.Qk <<" "<<out.A<<std::endl;
+    // }
+
     out.A = node.in.imm;
     out.Qdest = i;
     if(node.dest != -1) {
@@ -450,7 +451,7 @@ void execute(int i) {
   RoBNode node = RoB_in[i];
   // inst_type op = node.in.op;
   if(node.exec_process == 0) {
-    std::cout<<std::hex<<"!"<<node.in.pc<<std::endl;
+    // std::cout<<std::hex<<"!"<<node.in.pc<<std::endl;
     return;
   } // RS or SLB will do the work
   /*if(node.exec_process == 1) {

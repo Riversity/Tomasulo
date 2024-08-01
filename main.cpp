@@ -21,11 +21,11 @@ int main() {
     slb.exe();
     rob.exe();
     ++clock;
-    std::cout << std::hex << "->" << pc_nx << ' ' << pc_real << std::endl;
+    /*std::cout << std::hex << "->" << pc_nx << ' ' << pc_real << std::endl;
     for(int i = 0; i < 15; ++i) {
       std::cout<<"|"<<reg.reg_nx[i].val;
     }
-    std::cout<<std::endl;
+    std::cout<<std::endl;*/
   }
   std::cout << std::dec << (reg.reg_in[10].val & 0xFF) << std::endl;
   return 0;
