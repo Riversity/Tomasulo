@@ -5,7 +5,7 @@
 
 bool global_halt = false;
 
-unsigned pc_real = 0; // Committed
+unsigned pc_real = 0;
 unsigned pc_in, pc_nx = 0;
 
 const int MAX_R = 32;
@@ -215,15 +215,17 @@ void exe() {
 struct SLB {
   Que<RSNode, 32> slb_in;
   Que<RSNode, 32> slb_nx;
+  bool stuck = false;
   void upd() {
     slb_in = slb_nx;
   }
   void clear() {
     slb_in.clear();
     slb_nx.clear();
+    stuck = false;
   }
   void exe() {
-    if(!slb_in.empty()) {
+    if(!stuck && !slb_in.empty()) {
       RSNode node = slb_in.top();
       // std::cout <<"SLQJQK" << std::hex << node.Qj << " " << node.Qk << std::endl;
       if(node.Qj == -1 && node.Qk == -1) {
@@ -245,16 +247,19 @@ struct SLB {
           set_rob(node.Qdest, 2, 1, mem(pos, 2));
         break;
         case SB:
-          write(node.Vk, pos, 1);
-          set_rob(node.Qdest, 2, 0, 0);
+          // write(node.Vk, pos, 1);
+          stuck = true;
+          set_rob(node.Qdest, 2, 2, pos);
         break;
         case SH:
-          write(node.Vk, pos, 2);
-          set_rob(node.Qdest, 2, 0, 0);
+          // write(node.Vk, pos, 2);
+          stuck = true;
+          set_rob(node.Qdest, 2, 2, pos);
         break;
         case SW:
-          write(node.Vk, pos, 4);
-          set_rob(node.Qdest, 2, 0, 0);
+          // write(node.Vk, pos, 4);
+          stuck = true;
+          set_rob(node.Qdest, 2, 2, pos);
         break;
         default:
           assert(false);
@@ -316,8 +321,9 @@ void commit(int i) {
   pc_real = node.in.pc + 4;
   if(BEQ <= node.in.op && node.in.op <= BGEU) {
     if(node.in.pred_jp != node.val) { // pred fail
-      pc_real = pc_nx = (node.in.pred_jp) ? (node.in.pc + node.in.imm) : (node.in.pc + 4);
+      pc_real = pc_nx = (node.val) ? (node.in.pc + node.in.imm) : (node.in.pc + 4);
       clearall();
+      return;
     }
   } else if(node.in.op == JAL) {
     pc_real = node.in.pc + node.in.imm;
@@ -329,11 +335,14 @@ void commit(int i) {
     reg.reg_nx[node.dest].val = node.val;
     cancel_stuck();
   } else if(node.in.op == SB) {
-  //  write(node.val, node.pos, 1);
+    write(node.val, node.pos, 1);
+    slb.stuck = false;
   } else if(node.in.op == SH) {
-  //  write(node.val, node.pos, 2);
+    write(node.val, node.pos, 2);
+    slb.stuck = false;
   } else if(node.in.op == SW) {
-  //  write(node.val, node.pos, 4);
+    write(node.val, node.pos, 4);
+    slb.stuck = false;
   } else {
     reg.reg_nx[node.dest].val = node.val;
   }
