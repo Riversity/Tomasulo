@@ -2,3 +2,7 @@
 build
 test*
 *.data
+cache
+sequ
+code
+*1.txt

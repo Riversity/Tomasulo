@@ -82,13 +82,13 @@ void fuckaround(inst i) {
     R[i.rd] = R[i.rs1] & i.imm;
   break;
   case SLLI:
-    R[i.rd] = R[i.rs1] << i.shamt;
+    R[i.rd] = R[i.rs1] << i.imm;
   break;
   case SRLI:
-    R[i.rd] = R[i.rs1] >> i.shamt;
+    R[i.rd] = R[i.rs1] >> i.imm;
   break;
   case SRAI:
-    R[i.rd] = sext(R[i.rs1] >> i.shamt, 32 - i.shamt);
+    R[i.rd] = sext(R[i.rs1] >> i.imm, 32 - i.imm);
   break;
   case ADD:
     R[i.rd] = R[i.rs1] + R[i.rs2];
@@ -128,9 +128,9 @@ int main() {
   input();
   unsigned clock = 0;
   while(clock < 0x10000000) {
-    //std::cout << std::hex << mem(pc) <<"!";
-    //for(int i = 0; i<=16; ++i) std::cout << R[i] << "|";
-    //std::cout<< std::endl;
+    std::cout << std::hex << pc << std::endl;
+    for(int i = 0; i<=16; ++i) std::cout << "|" << R[i];
+    std::cout<< std::endl;
     ++clock;
     if(mem(pc) == 0x0ff00513) break;
     inst i = decode(mem(pc));

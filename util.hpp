@@ -48,8 +48,13 @@ int sext(unsigned c, int bit) {
    return (c >> (bit - 1) & 1) ? (c | (0xFFFFFFFF >> bit << bit)) : c;
 }
 
-inst decode(unsigned co) {
+inst decode(unsigned co, unsigned pc = 0) {
   inst i;
+  i.pc = pc;
+  if(co == 0x0ff00513) {
+    i.op = HALT;
+    return i;
+  }
   unsigned op = co & 0x7F;
   i.rd = co >> 7 & 0x1F;
   i.rs1 = co >> 15 & 0x1F;
@@ -132,7 +137,6 @@ inst decode(unsigned co) {
   }
   else if (op == 0b001'0011u) {
     i.imm = sext(co >> 20, 12);
-    i.shamt = i.rs2;
     switch (co >> 12 & 7) {
     case 0b000:
       i.op = ADDI;
@@ -154,9 +158,11 @@ inst decode(unsigned co) {
     break;
     case 0b001:
       i.op = SLLI;
+      i.imm = i.rs2;
     break;
     case 0b101:
       i.op = (co >> 30 & 1) ? SRAI : SRLI;
+      i.imm = i.rs2;
     break;
     }
   }
@@ -193,6 +199,5 @@ inst decode(unsigned co) {
   }
   return i;
 }
-
 
 #endif
