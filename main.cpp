@@ -17,10 +17,10 @@ int main() {
     rs.upd();
     slb.upd();
 
-    slb.exe();
-    rob.exe();
     iq.fetch();
+    slb.exe();
     rs.exe();
+    rob.exe();
     ++clock;
     /*if(pc_real != pc_prev) {
       std::cout << std::hex << pc_real << std::endl;
