@@ -30,14 +30,14 @@ void input() {
 unsigned mem(unsigned pos, unsigned len = 4) {
   // extracting a word from bytes
   unsigned ans = 0;
-  for(int i = 0; i < len; ++i) {
+  for(unsigned i = 0; i < len; ++i) {
     ans |= (M[pos + i]) << (i << 3);
   }
   return ans;
 }
 
 void write(unsigned val, unsigned pos, unsigned len = 4) {
-  for(int i = 0; i < len; ++i) {
+  for(unsigned i = 0; i < len; ++i) {
     M[pos + i] = val & 0xFF;
     val >>= 8;
   }

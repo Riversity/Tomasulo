@@ -3,19 +3,18 @@
 #include "inst.hpp"
 
 struct PRED {
-int status = 0;
-bool predict(inst &i) {
-  /* WAIT */
-  if(status >= 2) return true;
+int status[256] = {};
+bool predict(unsigned pc) {
+  if(status[pc & 0xff] >= 2) return true;
   else return false;
 }
-void decrease() {
-  if(status <= 0) status = 0;
-  else --status;
+void decrease(unsigned pc) {
+  if(status[pc & 0xff] <= 0) status[pc & 0xff] = 0;
+  else --status[pc & 0xff];
 }
-void increase() {
-  if(status >= 3) status = 3;
-  else ++status;
+void increase(unsigned pc) {
+  if(status[pc & 0xff] >= 3) status[pc & 0xff] = 3;
+  else ++status[pc & 0xff];
 }
 } pred;
 #endif

@@ -365,10 +365,10 @@ void commit(int i) {
     if(node.in.pred_jp != node.val) { // pred fail
       pc_real = pc_nx = (node.val) ? (node.in.pc + node.in.imm) : (node.in.pc + 4);
       if(node.val) {
-        pred.increase();
+        pred.increase(node.in.pc);
       }
       else {
-        pred.decrease();
+        pred.decrease(node.in.pc);
       }
       clearall();
       return;
@@ -579,7 +579,7 @@ void clear() {
 }
 unsigned get_next_pc(inst& i) {
   if(BEQ <= i.op && i.op <= BGEU) {
-    i.pred_jp = pred.predict(i);
+    i.pred_jp = pred.predict(i.pc);
     if(i.pred_jp) return pc_in + i.imm;
     else return pc_in + 4;
   }
