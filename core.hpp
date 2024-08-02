@@ -364,6 +364,12 @@ void commit(int i) {
   if(BEQ <= node.in.op && node.in.op <= BGEU) {
     if(node.in.pred_jp != node.val) { // pred fail
       pc_real = pc_nx = (node.val) ? (node.in.pc + node.in.imm) : (node.in.pc + 4);
+      if(node.val) {
+        pred.increase();
+      }
+      else {
+        pred.decrease();
+      }
       clearall();
       return;
     }
@@ -573,7 +579,7 @@ void clear() {
 }
 unsigned get_next_pc(inst& i) {
   if(BEQ <= i.op && i.op <= BGEU) {
-    i.pred_jp = predict(i);
+    i.pred_jp = pred.predict(i);
     if(i.pred_jp) return pc_in + i.imm;
     else return pc_in + 4;
   }
@@ -591,9 +597,9 @@ void fetch() {
   if(!stuck_in && !IQQ.full()) {
     unsigned code = mem(pc_in);
     inst i = decode(code, pc_in);
+    pc_nx = get_next_pc(i);
     IQQ.push(i);
     // if(i.op == JALR || i.op == HALT) stuck = true;
-    pc_nx = get_next_pc(i);
   }
   // send to RoB
   if(!IQQ.empty()) {

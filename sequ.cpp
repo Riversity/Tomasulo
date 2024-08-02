@@ -129,7 +129,7 @@ int main() {
   unsigned clock = 0;
   while(clock < 0x10000000) {
     std::cout << std::hex << pc << std::endl;
-    for(int i = 0; i<=16; ++i) std::cout << "|" << R[i];
+    for(int i = 0; i < 16; ++i) std::cout << "|" << R[i];
     std::cout<< std::endl;
     ++clock;
     if(mem(pc) == 0x0ff00513) break;
