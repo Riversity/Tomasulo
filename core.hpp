@@ -13,6 +13,7 @@ const int MAX_R = 32;
 void clearall();
 void cancel_stuck();
 void set_rob(int Q, int proc, int which, int val);
+bool get_rob(int Q, int& val);
 
 struct Register {
 struct RegisterNode {
@@ -181,6 +182,21 @@ void exe() {
 
     RSNode node = RS_in[i];
     // std::cout<<"QJQK "<<node.Qj << node.Qk << std::endl;
+    /*experimental*/
+    if(node.Qj != -1) {
+      int tmp;
+      if(get_rob(node.Qj, tmp)) {
+        RS_nx[i].Qj = -1;
+        RS_nx[i].Vj = tmp;
+      }
+    }
+    if(node.Qk != -1) {
+      int tmp;
+      if(get_rob(node.Qk, tmp)) {
+        RS_nx[i].Qk = -1;
+        RS_nx[i].Vk = tmp;
+      }
+    }
     if(node.Qj == -1 && node.Qk == -1) {
       if(node.op == JAL) {
         set_rob(node.Qdest, 2, 0, 0);
@@ -226,8 +242,23 @@ struct SLB {
   }
   void exe() {
     if(!stuck && !slb_in.empty()) {
+      int i = slb_in.head;
       RSNode node = slb_in.top();
       // std::cout <<"SLQJQK" << std::hex << node.Qj << " " << node.Qk << std::endl;
+      if(node.Qj != -1) {
+        int tmp;
+        if(get_rob(node.Qj, tmp)) {
+          slb_nx[i].Qj = -1;
+          slb_nx[i].Vj = tmp;
+        }
+      }
+      if(node.Qk != -1) {
+        int tmp;
+        if(get_rob(node.Qk, tmp)) {
+          slb_nx[i].Qk = -1;
+          slb_nx[i].Vk = tmp;
+        }
+      }
       if(node.Qj == -1 && node.Qk == -1) {
         int pos = node.Vj + node.A;
         switch(node.op) {
@@ -299,16 +330,24 @@ void upd() {
   RoB_in = RoB_nx;
 }
 void clear() {
+  RoB_in.clear();
   RoB_nx.clear();
 }
 void exe() {
   if(!RoB_in.empty() && RoB_in.top().stat >= Wres) commit(RoB_in.head);
-  for(int i = RoB_in.head; i != RoB_in.tail; i = (i + 1) % 64) {
+  if(!RoB_in.empty()) {
+    int i = RoB_in.head;
     stat_type st = RoB_in[i].stat;
     if(st == None) issue(i);
     else if(st == Issu) execute(i);
     else if(st == Exec) write_result(i);
-    // std::cout<<std::hex<<"IN ROB "<<RoB_in[i].in.pc<<" "<<st<<std::endl;
+    for(int i = (RoB_in.head + 1) % 64; i != RoB_in.tail; i = (i + 1) % 64) {
+      stat_type st = RoB_in[i].stat;
+      if(st == None) issue(i);
+      else if(st == Issu) execute(i);
+      else if(st == Exec) write_result(i);
+      // std::cout<<std::hex<<"IN ROB "<< i << " " <<RoB_in[i].in.pc<<" "<<st<<std::endl;
+    }
   }
 }
 void commit(int i) {
@@ -494,7 +533,8 @@ void write_result(int i) {
         rs.RS_nx[j].Vk = node.val;
       }
     }
-    for(int j = slb.slb_nx.head; j != slb.slb_nx.tail; j = (j + 1) % 32) {
+    if(!slb.slb_nx.empty()) {
+      int j = slb.slb_nx.head;
       if(slb.slb_nx[j].Qj == i) {
         slb.slb_nx[j].Qj = -1;
         slb.slb_nx[j].Vj = node.val;
@@ -502,6 +542,16 @@ void write_result(int i) {
       if(slb.slb_nx[j].Qk == i) {
         slb.slb_nx[j].Qk = -1;
         slb.slb_nx[j].Vk = node.val;
+      }
+      for(int j = (slb.slb_nx.head + 1) % 32; j != slb.slb_nx.tail; j = (j + 1) % 32) {
+        if(slb.slb_nx[j].Qj == i) {
+          slb.slb_nx[j].Qj = -1;
+          slb.slb_nx[j].Vj = node.val;
+        }
+        if(slb.slb_nx[j].Qk == i) {
+          slb.slb_nx[j].Qk = -1;
+          slb.slb_nx[j].Vk = node.val;
+        }
       }
     }
   }
@@ -561,6 +611,10 @@ void clearall() {
   rob.clear();
   rs.clear();
   slb.clear();
+  for(int i = 0; i < 32; ++i) {
+    reg.reg_nx[i].busy = false;
+    reg.reg_nx[i].Q = -1;
+  }
 }
 
 void cancel_stuck() {
@@ -575,6 +629,14 @@ void set_rob(int Q, int proc, int which, int res) {
   else if(which == 2) {
     rob.RoB_nx[Q].pos = res;
   }
+}
+
+bool get_rob(int Q, int& val) {
+  if(rob.RoB_in[Q].stat >= Wres) {
+    return true;
+    val = rob.RoB_in[Q].val;
+  }
+  return false;
 }
 
 #endif
