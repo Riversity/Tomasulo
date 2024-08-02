@@ -376,11 +376,11 @@ void commit(int i) {
   } else if(node.in.op == JAL) {
     pc_real = node.in.pc + node.in.imm;
     reg.reg_nx[node.dest].busy = false;
-    reg.reg_nx[node.dest].val = node.val;
+    if(node.dest != 0) reg.reg_nx[node.dest].val = node.val;
   } else if(node.in.op == JALR) {
     pc_real = pc_nx = node.pos;
     reg.reg_nx[node.dest].busy = false;
-    reg.reg_nx[node.dest].val = node.val;
+    if(node.dest != 0) reg.reg_nx[node.dest].val = node.val;
     cancel_stuck();
   } else if(node.in.op == SB) {
     write(node.val, node.pos, 1);
@@ -392,7 +392,7 @@ void commit(int i) {
     write(node.val, node.pos, 4);
     slb.stuck = false;
   } else {
-    reg.reg_nx[node.dest].val = node.val;
+    if(node.dest != 0) reg.reg_nx[node.dest].val = node.val;
   }
   if(reg.reg_nx[node.dest].Q == i) {
     reg.reg_nx[node.dest].busy = false;
@@ -442,7 +442,7 @@ void issue(int i) {
 
       RoB_nx[i].R = slb.slb_nx.push(out);
 
-      if(node.dest != -1) {
+      if(node.dest != -1 && node.dest != 0) {
         reg.reg_nx[node.dest].busy = true;
         reg.reg_nx[node.dest].Q = i;
       }
@@ -495,7 +495,7 @@ void issue(int i) {
 
     out.A = node.in.imm;
     out.Qdest = i;
-    if(node.dest != -1) {
+    if(node.dest != -1 && node.dest != 0) {
       reg.reg_nx[node.dest].busy = true;
       reg.reg_nx[node.dest].Q = i;
     }
