@@ -5,16 +5,16 @@
 struct PRED {
 int status[256] = {};
 bool predict(unsigned pc) {
-  if(status[pc & 0xff] >= 2) return true;
+  if(status[(pc >> 2) & 0xff] >= 2) return true;
   else return false;
 }
 void decrease(unsigned pc) {
-  if(status[pc & 0xff] <= 0) status[pc & 0xff] = 0;
-  else --status[pc & 0xff];
+  if(status[(pc >> 2) & 0xff] <= 0) status[(pc >> 2) & 0xff] = 0;
+  else --status[(pc >> 2) & 0xff];
 }
 void increase(unsigned pc) {
-  if(status[pc & 0xff] >= 3) status[pc & 0xff] = 3;
-  else ++status[pc & 0xff];
+  if(status[(pc >> 2) & 0xff] >= 3) status[(pc >> 2) & 0xff] = 3;
+  else ++status[(pc >> 2) & 0xff];
 }
 } pred;
 #endif

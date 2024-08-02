@@ -17,9 +17,9 @@ int main() {
     rs.upd();
     slb.upd();
 
-    iq.fetch();
     slb.exe();
     rs.exe();
+    iq.fetch();
     rob.exe();
     ++clock;
     /*if(pc_real != pc_prev) {
